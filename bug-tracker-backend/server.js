@@ -16,7 +16,28 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/bugs', require('./routes/bugs'));
 app.use('/api/admin', require('./routes/admin'));
 
+
+
 connectDB();
+
+app.get('/', (req, res) => {
+    res.send(`
+      <html>
+        <head>
+          <title>Welcome</title>
+          <style>
+            body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f4f4f4; }
+            h1 { color: #333; }
+            p { color: #666; font-size: 18px; }
+          </style>
+        </head>
+        <body>
+          <h1>Welcome to Our API</h1>
+          <p>We're glad to have you here! 🚀</p>
+        </body>
+      </html>
+    `);
+  });
 
 const PORT = process.env.PORT ;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`)); 
