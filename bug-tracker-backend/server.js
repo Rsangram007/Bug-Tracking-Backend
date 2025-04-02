@@ -1,5 +1,6 @@
 const express = require('express');
 const http = require('http');
+const cors = require('cors');
 const { config } = require('dotenv');
 const connectDB = require('./config/db');
 const socket = require('./sockets/socket');
@@ -12,6 +13,7 @@ const io = socket(server); // Initialize Socket.io
 notifyService.setIo(io);  // Pass io to notifyService
 
 app.use(express.json());
+app.use(cors())
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/bugs', require('./routes/bugs'));
 app.use('/api/admin', require('./routes/admin'));
