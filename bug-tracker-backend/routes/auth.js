@@ -73,4 +73,12 @@ router.post('/register', async (req, res) => {
 });
 
 
+router.get('/login', (req, res) => {
+  res.status(200).json({ 
+    status: 'auth-service-ok',
+    message: 'Authentication service operational'
+  });
+});
+
+
 module.exports = router;

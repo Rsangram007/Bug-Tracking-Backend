@@ -6,6 +6,14 @@ const role = require('../middleware/role');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' }); // Temporary storage before Cloudinary
 
+// Connection test endpoint
+router.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'bug-service-ok',
+    message: 'Bug service operational'
+  });
+});
+
 // Report a bug (QA only)
 router.post('/report', auth, role(['qa']), upload.array('attachments'), async (req, res) => {
   const { title, description } = req.body;
