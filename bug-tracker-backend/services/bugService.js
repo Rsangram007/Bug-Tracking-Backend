@@ -55,7 +55,8 @@ class BugService {
   async getAllBugs(user) {
     if (user.role === 'admin') return Bug.find().populate('createdBy assignedTo');
     if (user.role === 'developer') return Bug.find({ assignedTo: user.id }).populate('createdBy');
-    return Bug.find({ createdBy: user.id }).populate('assignedTo');
+    // Return all bugs for QA users instead of just their own
+    return Bug.find().populate('assignedTo');
   }
 
   async assignBug(bugId, developerId) {

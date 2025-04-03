@@ -16,7 +16,7 @@ router.get('/users', auth, role(['admin']), async (req, res) => {
 });
 
 // Assign a bug to a developer (Admin only)
-router.put('/bugs/:id/assign', auth, role(['admin']), async (req, res) => {
+router.put('/bugs/:id/assign', auth, role(['admin','qa']), async (req, res) => {
   const { developerId } = req.body;
   try {
     const bug = await bugService.assignBug(req.params.id, developerId);
