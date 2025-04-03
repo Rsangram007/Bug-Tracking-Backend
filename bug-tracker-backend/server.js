@@ -14,7 +14,7 @@ notifyService.setIo(io);  // Pass io to notifyService
 
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: true, // Allow all origins
   credentials: true
 }));
 app.use('/api/auth', require('./routes/auth'));
