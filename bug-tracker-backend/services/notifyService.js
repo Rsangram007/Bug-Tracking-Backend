@@ -8,13 +8,22 @@ class NotifyService {
   }
 
   async notifyUser(userId, message, bugId = null) {
-    const notification = new Notification({ user: userId, message, bugId });
+    const User = (await import("../models/User.js")).default;
+    const user = await User.findById(userId);
+    
+    const notification = new Notification({ 
+      user: userId, 
+      userName: user.name,
+      message, 
+      bugId 
+    });
     await notification.save();
 
     if (io) {
       io.to(userId.toString()).emit("notification", {
         message,
         bugId,
+        userName: user.name,
         timestamp: Date.now(),
       });
     }
