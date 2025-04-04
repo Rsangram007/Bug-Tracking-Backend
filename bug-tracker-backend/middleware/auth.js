@@ -23,7 +23,23 @@ const auth = (req, res, next) => {
     // Proceed to the next middleware or route handler
     next();
   } catch (error) {
-    res.status(401).json({ error: 'Invalid token.' });
+    console.error('Token verification error:', {
+      error: error.message,
+      token: token,
+      timestamp: new Date().toISOString()
+    });
+    
+    let errorMessage = 'Invalid token.';
+    if (error.name === 'TokenExpiredError') {
+      errorMessage = 'Token expired. Please login again.';
+    } else if (error.name === 'JsonWebTokenError') {
+      errorMessage = 'Malformed token. Please login again.';
+    }
+    
+    res.status(401).json({ 
+      error: errorMessage,
+      code: error.name || 'AUTH_ERROR'
+    });
   }
 };
 
