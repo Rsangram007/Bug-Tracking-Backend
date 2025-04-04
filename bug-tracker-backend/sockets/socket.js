@@ -19,8 +19,14 @@ module.exports = (server) => {
     if (!token) {
       return next(new Error('Authentication error'));
     }
-    // Verify token here (use your JWT verification logic)
-    next();
+    try {
+      // Verify token using the same logic as auth middleware
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      socket.user = decoded;
+      next();
+    } catch (error) {
+      return next(new Error('Invalid token.'));
+    }
   });
 
   io.on('connection', (socket) => {
