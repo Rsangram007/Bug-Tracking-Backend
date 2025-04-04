@@ -4,9 +4,7 @@ const { Server } = require('socket.io');
 module.exports = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: process.env.NODE_ENV === 'production' 
-        ? ['https://bug-tracking-backend.onrender.com'] 
-        : ['http://localhost:3000'],
+      origin: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
       credentials: true
     },
