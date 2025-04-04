@@ -4,15 +4,27 @@ const { Server } = require('socket.io');
 module.exports = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: '*', // Adjust this in production to specific frontend URL
-      methods: ['GET', 'POST'],
+      origin: process.env.NODE_ENV === 'production' 
+        ? 'https://bug-tracking-backend.onrender.com' 
+        : 'http://localhost:3000',
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
       credentials: true
     },
     transports: ['websocket', 'polling'],
-    allowEIO3: true
+    allowEIO3: true,
+    cookie: true
   });
 
   // Handle socket connections
+  io.use((socket, next) => {
+    const token = socket.handshake.auth.token;
+    if (!token) {
+      return next(new Error('Authentication error'));
+    }
+    // Verify token here (use your JWT verification logic)
+    next();
+  });
+
   io.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`);
     
