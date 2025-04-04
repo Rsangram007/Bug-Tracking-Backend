@@ -55,6 +55,19 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
+// Get single bug details
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const bug = await bugService.getBugById(req.params.id);
+    if (!bug) {
+      return res.status(404).json({ error: 'Bug not found' });
+    }
+    res.json(bug);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.put('/:id/assign', auth, role(['admin']), async (req, res) => {
   const { developerId } = req.body;
   try {
