@@ -21,7 +21,10 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/bugs', require('./routes/bugs'));
 app.use('/api/admin', require('./routes/admin'));
 
-
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Server is healthy' });
+});
 
 connectDB();
 
