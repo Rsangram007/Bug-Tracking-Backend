@@ -6,7 +6,7 @@ module.exports = (server) => {
     cors: {
       origin: process.env.NODE_ENV === 'production' 
         ? ['https://bug-tracking-backend.onrender.com'] 
-        : [  'https://bug-tracking-backend.onrender.com'],
+        : ['http://localhost:3000'],
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
       credentials: true
     },
