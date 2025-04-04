@@ -4,7 +4,9 @@ const { Server } = require('socket.io');
 module.exports = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: true,
+      origin: process.env.NODE_ENV === 'development' 
+        ? 'http://localhost:3000'
+        : true,
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
       credentials: true
     },
