@@ -67,6 +67,12 @@ class BugService {
     await notifyService.notifyDeveloper(developerId, `Bug ${bug.title} assigned to you`);
     return bug;
   }
+
+  async getBugById(bugId) {
+    const bug = await Bug.findById(bugId).populate('createdBy assignedTo');
+    if (!bug) throw new Error('Bug not found');
+    return bug;
+  }
 }
 
 module.exports = new BugService();

@@ -48,6 +48,15 @@ router.put('/:id/verify', auth, role(['qa']), async (req, res) => {
 
 router.get('/', auth, async (req, res) => {
   try {
+
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const bug = await bugService.getBugById(req.params.id);
+    res.json(bug);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
     const bugs = await bugService.getAllBugs(req.user);
     res.json(bugs);
   } catch (error) {
