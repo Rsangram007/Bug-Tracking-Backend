@@ -4,7 +4,7 @@ const { Server } = require('socket.io');
 module.exports = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: process.env.NODE_ENV === 'production' ? 'https://bug-tracking-backend.onrender.com' : 'http://localhost:3000',
+      origin: true, // Allow all origins in development and production
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
       credentials: true
     },
@@ -17,7 +17,7 @@ module.exports = (server) => {
   io.use((socket, next) => {
     const token = socket.handshake.auth.token;
     if (!token) {
-      return next(new Error('Authentication error'));
+      return next(new Error('Authentication error: Token is required'));
     }
     try {
       // Verify token using the same logic as auth middleware
@@ -25,7 +25,8 @@ module.exports = (server) => {
       socket.user = decoded;
       next();
     } catch (error) {
-      return next(new Error('Invalid token.'));
+      console.error('Token verification error:', error);
+      return next(new Error('Invalid token. Please login again.'));
     }
   });
 
