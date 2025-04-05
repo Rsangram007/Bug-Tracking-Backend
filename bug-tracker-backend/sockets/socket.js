@@ -14,21 +14,29 @@ module.exports = (server) => {
   });
 
   // Handle socket connections
-  io.use((socket, next) => {
-    const token = socket.handshake.auth.token;
-    if (!token) {
-      return next(new Error('Authentication error: Token is required'));
+// Update your JWT verification middleware
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  
+  if (!token) {
+    return next(new Error('Authentication error: Token is required'));
+  }
+
+  try {
+    // Verify with same secret and options as HTTP routes
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    socket.user = decoded;
+    next();
+  } catch (err) {
+    console.error('Socket token verification failed:', err.message);
+    
+    // Differentiate between expired and invalid tokens
+    if (err.name === 'TokenExpiredError') {
+      return next(new Error('Token expired'));
     }
-    try {
-      // Verify token using the same logic as auth middleware
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      socket.user = decoded;
-      next();
-    } catch (error) {
-      console.error('Token verification error:', error);
-      return next(new Error('Invalid token. Please login again.'));
-    }
-  });
+    return next(new Error('Invalid token'));
+  }
+});
 
   io.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`);
