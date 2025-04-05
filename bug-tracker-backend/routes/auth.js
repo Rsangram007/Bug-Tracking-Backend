@@ -95,46 +95,10 @@ router.post('/refresh-token', async (req, res) => {
   }
 });
 
-// Verify token endpoint
-// auth routes
-router.post('/refresh-token', async (req, res) => {
-  try {
-    // Get token from cookies or auth header
-    const token = req.cookies.token || req.header('Authorization')?.replace('Bearer ', '');
-    
-    if (!token) {
-      return res.status(401).json({ error: 'No token provided' });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
-    
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    const newToken = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
-
-    // Set cookie and send response
-    res.cookie('token', newToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
-    });
-
-    res.json({ token: newToken });
-  } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
-  }
-});
 
 // Verify token endpoint
 router.post('/verify-token', async (req, res) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+  const token = req.body.token || req.header('Authorization')?.replace('Bearer ', '');
   
   if (!token) {
     return res.status(401).json({ error: 'No token provided' });
@@ -150,6 +114,11 @@ router.post('/verify-token', async (req, res) => {
       return res.status(404).json({ error: 'User not found.' });
     }
 
+    res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
+      ? 'https://bug-tracking-backend.onrender.com' 
+      : 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    
     res.json({ 
       valid: true,
       user: { id: user._id, username: user.username, role: user.role }
