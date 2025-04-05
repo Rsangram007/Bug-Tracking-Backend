@@ -132,4 +132,42 @@ router.post('/refresh-token', async (req, res) => {
   }
 });
 
+// Verify token endpoint
+router.post('/verify-token', async (req, res) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  
+  if (!token) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
+
+  try {
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Find the user by ID
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    res.json({ 
+      valid: true,
+      user: { id: user._id, username: user.username, role: user.role }
+    });
+  } catch (error) {
+    console.error('Token verification error:', error);
+    
+    let errorMessage = 'Invalid token';
+    if (error.name === 'TokenExpiredError') {
+      errorMessage = 'Token expired';
+    }
+    
+    res.status(401).json({ 
+      valid: false,
+      error: errorMessage,
+      code: error.name || 'TOKEN_ERROR'
+    });
+  }
+});
+
 module.exports = router;
