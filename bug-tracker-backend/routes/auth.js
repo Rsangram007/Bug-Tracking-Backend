@@ -48,7 +48,11 @@ router.get('/login', (req, res) => {
 
 // Token refresh endpoint
 router.post('/refresh-token', async (req, res) => {
-  const { token } = req.body;
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  
+  if (!token) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
 
   try {
     // Verify the token
@@ -67,9 +71,27 @@ router.post('/refresh-token', async (req, res) => {
       { expiresIn: '1h' } // Token expires in 1 hour
     );
 
-    res.json({ token: newToken });
+    res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
+      ? 'https://bug-tracking-backend.onrender.com' 
+      : 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    
+    res.json({ 
+      token: newToken,
+      user: { id: user._id, username: user.username, role: user.role }
+    });
   } catch (error) {
-    res.status(401).json({ error: 'Invalid token.' });
+    console.error('Refresh token error:', error);
+    
+    let errorMessage = 'Invalid token';
+    if (error.name === 'TokenExpiredError') {
+      errorMessage = 'Token expired';
+    }
+    
+    res.status(401).json({ 
+      error: errorMessage,
+      code: error.name || 'TOKEN_ERROR'
+    });
   }
 });
 

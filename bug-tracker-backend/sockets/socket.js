@@ -1,10 +1,13 @@
 const { Server } = require('socket.io');
+const jwt = require('jsonwebtoken');
 
 // Initialize Socket.io with the HTTP server
 module.exports = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: true, // Allow all origins in development and production
+      origin: process.env.NODE_ENV === 'production' 
+        ? 'https://bug-tracking-backend.onrender.com' 
+        : 'http://localhost:3000',
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
       credentials: true
     },
@@ -32,6 +35,8 @@ io.use((socket, next) => {
     
     // Differentiate between expired and invalid tokens
     if (err.name === 'TokenExpiredError') {
+      // Allow expired tokens to attempt refresh
+      socket.emit('token-expired');
       return next(new Error('Token expired'));
     }
     return next(new Error('Invalid token'));
