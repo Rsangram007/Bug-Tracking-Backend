@@ -7,6 +7,13 @@ const os = require('os');
 const connectDB = require('./config/db');
 const socket = require('./sockets/socket');
 const notifyService = require('./services/notifyService');
+
+const corsOptions = {
+  origin: ['https://bug-tracking-backend.vercel.app', 'http://localhost:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
 config();
 
 // Enable cluster mode for multi-core processing
@@ -32,12 +39,7 @@ if (cluster.isMaster) {
   // Optimize Express for concurrent requests
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-  app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:5000'],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }));
+  app.use(cors(corsOptions));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/bugs', require('./routes/bugs'));
 app.use('/api/admin', require('./routes/admin'));
