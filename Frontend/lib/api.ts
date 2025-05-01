@@ -5,7 +5,7 @@ import type { User } from "@/types/user";
 import type { Notification } from "@/types/notification";
 
 // Update to use the hosted backend URL
-const API_URL = "https://bug-tracking-backend.onrender.com" ;
+const API_URL = "https://bug-tracking-app.onrender.com" ;
 // Create an axios instance with default config
 const api = axios.create({
   baseURL: API_URL,
