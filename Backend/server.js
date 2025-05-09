@@ -9,7 +9,7 @@ const socket = require('./sockets/socket');
 const notifyService = require('./services/notifyService');
 
 const corsOptions = {
-  origin: ['https://bug-tracking-app-tawny.vercel.app/', 'http://localhost:3000', 'https://bug-tracking-backend.onrender.com'],
+  origin: ['https://bug-tracking-app-tawny.vercel.app', 'http://localhost:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
