@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  "https://bug-tracking-backend.onrender.com";
+  "https://bug-tracking-app.onrender.com";
 
 interface SocketContextType {
   socket: Socket | null;
@@ -135,6 +135,12 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         setError("Session expired. Refreshing token...");
       } else if (err.message.includes("CORS")) {
         setError("Server connection issue. Please try again later.");
+      } else if (err.message.includes("TransportError")) {
+        setError("Connection issue. Attempting to reconnect...");
+        const retryDelay = Math.min(3000 * Math.pow(2, connectionAttempts), 30000);
+        setTimeout(() => {
+          setConnectionAttempts(prev => prev + 1);
+        }, retryDelay);
       } else {
         setError(err.message);
       }
